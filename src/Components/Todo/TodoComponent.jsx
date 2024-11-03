@@ -1,10 +1,11 @@
 import {TitleTextComponent} from "../UI/TitleTextComponent";
 import {useForm} from "react-hook-form";
-import {useEffect, useState} from "react";
 import {BtnComponent} from "./Components/BtnComponent";
 import {TextFieldComponent} from "./Components/TextFieldComponent";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useDispatch, useSelector} from "react-redux";
+import {addTask, checkboxComplete, deleteTask} from "../../Store/store";
 
 
 export function TodoComponent() {
@@ -17,34 +18,20 @@ export function TodoComponent() {
         resolver: zodResolver(taskSchema),
     });
 
-    const [tasks, setTasks] = useState(() => {
-        const savedTasks = localStorage.getItem('tasks');
-        return savedTasks ? JSON.parse(savedTasks) : [];
-    });
-
-
-    useEffect(() => {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    }, [tasks]);
+    const dispatch = useDispatch();
+    const tasks = useSelector((state) => state.todos);
 
     function onSubmit(data) {
-        setTasks((prevTasks) => [
-            ...prevTasks,
-            {id: Date.now(), text: data.task, completed: false}
-        ]);
+        dispatch(addTask(data.task));
         reset();
     }
 
-    function toggleTaskCompletion(id) {
-        setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-                task.id === id ? {...task, completed: !task.completed} : task
-            )
-        );
+    function checkboxTaskComplete(id) {
+        dispatch(checkboxComplete(id));
     }
 
-    function deleteTask(id) {
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    function deleteTodoTask(id) {
+        dispatch(deleteTask(id));
     }
 
     return (
@@ -69,13 +56,13 @@ export function TodoComponent() {
                         <TextFieldComponent
                             type="checkbox"
                             checked={task.completed}
-                            onChange={() => toggleTaskCompletion(task.id)}
+                            onChange={() => checkboxTaskComplete(task.id)}
                             className="text-green-500 focus:ring-green-400"
                         />
                         <span className={`font-serif flex-1 ${task.completed ? "text-gray-400" : "text-gray-700"}`}>
                             {task.text}
                         </span>
-                        <button onClick={() => deleteTask(task.id)}
+                        <button onClick={() => deleteTodoTask(task.id)}
                                 className="font-serif text-red-950 hover:text-red-500 transition duration-200">
                             Delete
                         </button>
