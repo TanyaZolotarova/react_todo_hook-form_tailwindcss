@@ -6,6 +6,7 @@ import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useDispatch, useSelector} from "react-redux";
 import {addTask, checkboxComplete, deleteTask} from "../../Store/store";
+import {TotalElementsComponent} from "./Components/TotalElementsComponent";
 
 
 export function TodoComponent() {
@@ -57,7 +58,7 @@ export function TodoComponent() {
                             type="checkbox"
                             checked={task.completed}
                             onChange={() => checkboxTaskComplete(task.id)}
-                            className="text-green-500 focus:ring-green-400"
+                            className={"text-green-500 focus:ring-green-400"}
                         />
                         <span className={`font-serif flex-1 ${task.completed ? "text-gray-400" : "text-gray-700"}`}>
                             {task.text}
@@ -68,6 +69,7 @@ export function TodoComponent() {
                         </button>
                     </li>
                 ))}
+                <TotalElementsComponent className={"mt-4 text-gray-600 text-sm flex justify-start"} text={`Total tasks: ${tasks.length}`}/>
             </ul>
         </div>
     )
